@@ -1,0 +1,340 @@
+About FREDLIN:
+The idea for FREDLIN arose in 2010 with my desire for "ed" to be easier to 
+use.  It was my first time editing in Linux with the command line and only 
+"ed" and "vi" were available.  I have never been able to get on with 
+"vi", so I was left struggling with "ed".
+
+The DOS line editor "EDLIN" was created by Tim Paterson (the genius behind 
+the original release of DOS) in about 1980.  It has long been a simple-to-use 
+line editor and I thus quickly identified it as a good replacement, at least 
+for what I was doing.  I searched long and hard online to try to see if there 
+was any project to port it across, but in vain.
+
+Years later, I decided to port it across.  I thought I might be onto 
+something when I found the source online for the FreeDOS version, however the 
+author had changed too much of the program for my taste.  I even looked 
+at disassembling the original program, but didn't get very far.  In the end, I 
+decided to re-write it from scratch.
+
+I had to change a few Ctrl actions for compatibility with the Linux 
+platform and write a new line-entry system to support the original 86-DOS 
+"Template" system, but the result you see before you: the result of five 
+years of procrastination, plus a couple of week's work.
+
+Please note that this is the first program I've written in C in four years, so 
+apologies if it is not as efficient as it could be.
+
+
+The line numbering system:
+Line numbers in FREDLIN are dynamically assigned to the lines in the file and 
+will change if a new line is inserted (see Inserting lines [HI]) earlier in 
+the file.  A specific line (initially the first, then usually the last to be 
+edited) is designated as the "current" line and is marked by an asterisk 
+("*") when the file is listed (see Listing lines [HL]).
+
+A line number can be specified in the following ways:
+-	As an actual number (the number of the line) between 1 and 
+	2147483647.  If the number is greater than the largest existing line 
+	number then the line after the last existing line will be specified.
+-	As a full stop ("."), which denotes the "current" line.
+-	As a hash ("#"), which denotes the line after the last 
+	one currently in existence (this is the same as specifying a line 
+	number greater than that of the last line in the file).
+
+If no line number is given when one is required by a command, it will 
+default to a certain value (dependent upon the command in question).
+
+A range of lines can be specified two line numbers separated either by a 
+comma (",") or a dash ("-") but NOT a space.  A range CANNOT be written 
+without an explicit end ("3-"): to specify lines 3 to the end use "3-#".
+
+
+Typing in FREDLIN:
+FREDLIN uses a "Template" system for commands.  When typing a command, the 
+template is the last command typed.  When editing a line (see Editing lines 
+[H1]), the template is the original contents of the line.  When inserting 
+lines (see Inserting lines [HI]), the template is the last line to be 
+inserted.  When typing replacement text for a "Replace" command (see 
+Replacing text [HR]), the template is the text to find.  As you type, the 
+current position in the template is advanced unless "Insert Mode" is on.
+
+The following key combinations work with the template:
+ESC S or F1	This copies one character from the template to the current line.
+ESC T or F2	This must be followed by a character and copies all characters 
+		from the template up to but not including the next occurrence 
+		in the template of the specified character.  If the specified 
+		character does not occur from the current point in the 
+		template onwards, no characters are copied to the line and the 
+		position in the template does not advance.
+ESC U or F3	This copies all remaining characters from the template to 
+		the line.
+ESC V or F4	This skips over one character in the template.
+ESC W or F5	This must be followed by a character.  It skips over all 
+		characters in the template, up to but not including the next 
+		occurrence of the specified character in the template after 
+		the current point.  If the specified character does not 
+		appear, no characters are skipped.
+ESC P		This turns on "Insert Mode".  In this mode, as characters are 
+		typed to the line, the current position in the template does 
+		not advance.
+ESC Q		This turns off "Insert Mode".  Outside of this mode, the 
+		position in the template is advanced for each character typed 
+		to the line.  This is the default mode.
+INS		This toggles "Insert Mode" on and off.  By default, it is 
+		off.
+ESC R or F8	This changes the template to be the current line.  The current 
+		line as typed into the buffer is cleared and "Insert Mode" is 
+		turned off.  On the screen, an At sign ("@") is written 
+		followed by a new line.
+
+A line ends with a new line, the new line character being included in the 
+line.  The maximum length of a line is 255 characters, however you can make a 
+line "wrap" to a new line.  To do this, end the line with a CTRL+Y.  This 
+submits the line without the new line character appended to the end.  If 
+editing a line in this way you will need to insert (see the "I" command) the 
+remains of the line afterwards.
+
+You can clear the current line and start again by pressing CTRL+X.
+
+You can cancel the current line by pressing CTRL+D if FREDLIN has been 
+compiled without the "-DSIGINTTOCANCEL" flag set, or CTRL+C otherwise.  This 
+will cancel editing and leave from inserting text, discarding the current 
+line.  Any lines entered previously will not be affected.  All commands can 
+be terminated in this way unless they require a specific Y/N answer.
+
+CTRL+L is used to specify the use of a line break in search or replace text as 
+part of the Search command (see The "Search" command [HS]) or Replace 
+command (see Replacing text [HR]) respectively.  It is therefore recommended 
+that you do not use this character as part of the text in your file.
+
+
+Editing Lines:
+To edit a line, simply type its line number as a command.  If the line number 
+is not specified (that is, a blank command is entered) the line after the 
+"current line" (see The line numbering system [H.]) is edited.  You can only 
+edit lines that already exist: to enter text in an empty file, you will need 
+to use the Insert command (see Inserting lines [HI].)
+
+The line to be edited will be displayed with its line number and the new line 
+will be entered below it.  If no changes are needed, press CTRL+D to cancel 
+the edit (unless FREDLIN has been compiled with the "-DSIGINTTOCANCEL" flag 
+set, in which case press CTRL+C): do not press Return as this will replace 
+the line with a blank line.  Otherwise, you can enter your replacement line 
+with the old one as the "Template" (see Typing in FREDLIN [H-]).
+
+
+Listing lines:
+There are two ways of listing lines in FREDLIN: the List command and the Page 
+command.  Both list a specified range of lines.  The lines are listed preceded 
+by the line number (see The line numbering system [H.]) and an asterisk 
+("*") if it is the current line.  If a line does not end with a line-break 
+and thus "wraps" to the next line, the following line (the one it wraps to) 
+will be preceded by a hyphen ("-").  A file that does not end with a linebreak
+will, when listed, display a hyphen before the next prompt.
+
+The List command:
+The list command comprises of a range of lines (see The line numbering system 
+[H.]) followed by the letter "L".  If the first line number in the range is 
+not specified, the "current line" (see The line numbering system [H.]) will 
+be assumed.  If the second line number in the range is omitted, 23 lines will 
+be listed; from 11 lines before the first line number to 11 after it.  If the 
+first line is fewer than 11 lines before the first line number then additional 
+lines will be listed at the end.  Therefore, if the range is omitted entirely 
+(and thus the command consists entirely of the letter "L"), 23 lines, 
+starting from 11 before the current line if possible, will be listed.  The 
+"current line\" is not changed.
+
+The Page command:
+The page command also comprised of a range of lines (see The line numbering 
+system [H.]) but followed by the letter "P".  If the first line number in 
+the range is not specified then the first line in the file is assumed.  If the 
+second line number in the range is omitted then the last line in the file is 
+assumed.  Therefore, if the range is not specified, the whole file will be 
+listed.  The "current line" is then changed to be the last line listed.
+
+
+Quitting FREDLIN:
+There are two ways to quit FREDLIN: the Quit command and the Exit command.
+
+The Quit command:
+The Quit command comprises simply of the letter "Q".  It quits FREDLIN 
+without saving the open file, thus if the file has changed since it was last 
+saved then any changes are lost.  If changes to the file have been saved since 
+the file was opened, the original file will be preserved as a file with 
+".BAK" appended to the filename.  FREDLIN will ask you to confirm that you 
+wish to quit before taking this action.
+
+The Exit command:
+The Exit command comprises simply of the letter "E".  It saves any changes 
+in the open file first before quitting FREDLIN.  The original file (before 
+editing) is preserved with ".BAK" appended to its filename.  FREDLIN will not 
+ask you to confirm before taking this action.
+
+
+Saving your file:
+To save your file, use the Write command.  This comprises simply of the letter 
+"W".  The file as it exists in memory will be saved to the original 
+filename.  The original file will be preserved, however, with ".BAK" 
+appended to its filename.
+
+
+Inserting lines:
+To insert lines into the file, use the Insert command.  This is comprised of a 
+line number followed by the letter "I".  The new line will be inserted 
+before the specified line.  If the line number is not specified, the "current 
+line" (see The line numbering system [H.]) is assumed.  If a line number 
+greater than the number of lines in the file is specified then the new line 
+will be appended to the end of the file.
+
+After entering this command, you can enter as many lines as you wish, ending 
+them with a return (or a CTRL+Y if you wish the text to "wrap" onto the next 
+line).  To exit from this mode back to entering commands, press CTRL+D if 
+FREDLIN has been compiled without the "-DSIGINTTOCANCEL" flag set, or CTRL+C 
+otherwise.  When you do this, the line you were entering at the time will be 
+discarded but any lines entered prior to this will be inserted into the file 
+at the specified point.  The last line inserted will become the "current 
+line" (see The line numbering system [H.]).
+
+
+Deleting lines:
+To delete lines in a file, use the Delete command.  This is comprised of a 
+range followed by the letter "D".  Please note that ALL the lines in the 
+specified range will be deleted.  If the first line number in the range is 
+omitted, the "current line" (see The line numbering system [H.]) is 
+assumed.  If the second line number in the range is omitted, it is assumed to 
+be the same as the first so that only one line is deleted.  Therefore, if the 
+range is omitted, the current line is deleted.  The line immediately following 
+the deleted text will then become the "current line" (or the last line if 
+the range was at the end of the file) and will have the same line number as 
+the first line deleted .  FREDLIN will then tell you how many lines were 
+deleted.
+
+
+Moving lines:
+To move lines to another part of the file, use the Move command.  This is 
+comprised of a range representing the lines you want to move, followed by a 
+comma (","), followed by the line number to which you want to move these 
+lines, followed by the letter "M".  The range of lines will be moved to the 
+position between the specified line and the one before it.  If the first line 
+number in the range is omitted, the first line in the file will be assumed.  
+If the second line number in the range is omitted, it is assumed to be the 
+same as the first; that is, only one line will be moved.  If the destination 
+line number is omitted, the command will fail.  If the destination line is 
+within the range of lines to move, the command will fail.
+
+
+Copying lines:
+To copy lines to another part of the file, use the Copy command.  This is 
+comprised of the range to copy, followed by a comma (","), followed by the 
+line to which to copy the lines, followed by another comma, followed by the 
+number of copies to make, followed by the letter "C".  The range of lines 
+will be copied to the position between the specified line and the line before 
+it.  If the first line number in the range is omitted, the first line in the 
+file is assumed.  If the second line in the range is omitted, it is assumed to 
+be the same as the first (that is, only one line will be copied).  If the 
+destination line is omitted, the command will fail.  If the number of copies 
+to make is omitted, it is assumed to be 1 (that is, only one copy will be 
+made).
+
+
+The "Search" command:
+To search for a specific piece of text in the file, use the "Search" 
+command.  You can only search for a piece of text that exists entirely on one 
+line: if a line ends or "wraps" during that text then it will not be found.  
+The Search command is comprised of a range (indicating where is to be 
+searched), followed by an optional question mark ("?"), followed by the 
+letter "S", followed by the text for which to search.  If the first line 
+number in the range is omitted, the first line in the file is assumed.  If the 
+second line number in the range is omitted, the last line in the file is 
+assumed.  Therefore, if the range is omitted, the whole file is searched.  If 
+the text for which to search is omitted, the command will fail.
+
+The line break at the end of the command is not considered part of the text 
+for which to search.  As such, if you wish to search for text at the end of 
+the line (that is, that includes the line break), you can substitute in the 
+CTRL+L key combination (which will appear as a colour-inverted letter "L" on 
+screen, assuming your display allows for colour inversion).  It is as such 
+recommended that you do not include this key combination as part of the file 
+itself.
+
+The specified range of lines will be searched for the specified search text.  
+If the search text is not found in any of the specified lines, FREDLIN will 
+inform you of this, otherwise the line containing the found text will be 
+listed (see Listing lines [HL] for the format).  If the question mark ("?") 
+has been specified before the "S" in the command then you will be asked 
+whether or not this is the correct occurence of the search text in the range.  
+If the answer to this question is "Y" or if the question mark is not 
+specified in the command then the line of the found search text becomes the 
+current line and the command will end.  Otherwise, the search will continue 
+and you will be prompted each time the search text is found.
+
+
+Replacing text:
+You can search for a specific piece of text in the file and have it 
+automatically replaced with another piece of text using the Replace command.  
+This is comprised of a range specifying where to search, followed by an 
+optional question mark ("?"), followed by the letter "R", followed by the 
+text for which to search.  After entering this command, you will be prompted 
+to enter the text with which to replace the search text.  You can then enter 
+it, using the search text as the "Template" (see Typing in FREDLIN [H-]).  
+If the first line number in the range is omitted, the first line in the file 
+is assumed.  If the second line number in the range is omitted, the last line 
+in the file is assumed.  Therefore, if the range is omitted, the entire file 
+will be searched.  If the search text is omitted, the command will fail.  If 
+the replace text is omitted (that is, a blank line is submitted) then it is 
+considered to be "null", effectively deleting occurences of the search text.
+
+If the question mark ("?") is not specified before the letter "R" in the 
+command then all occurences of the search string in the specified lines will 
+automatically be replaced by the replace text and the line in which the 
+replacement occurs displayed.  Otherwise, every time the search text is found 
+in the specified lines, FREDLIN will display the line as it would be if the 
+replacement was made.  You will then be asked if this is correct.  If you 
+answer "Y", the replacement will be made, otherwise it will not.  The search 
+will then continue, prompting you for each replacement, until all the 
+specified lines have been searched.
+
+The line break at the end of the command is not considered part of the text 
+for which to search or the replacement text.  As such, if you wish to search 
+for text at the end of the line (that is, that includes the line break), you 
+can substitute in the CTRL+L key combination (which will appear as a 
+colour-inverted letter "L" on screen, assuming your display allows for 
+colour inversion).  You should then use it in the correct place in the 
+replacement string unless you want the replacement lines to "wrap".  Do not 
+use it to place line-breaks in the middle of lines as this will cause 
+unpredictable behaviour and you may lose the end of the line.  It is as such 
+recommended that you do not include this key combination as part of the file 
+itself.
+
+The CTRL+D command (or the CTRL+C command if FREDLIN has been compiled with 
+the "-DSIGINTTOCANCEL" flag set) cannot be used to stop the Replace command 
+once it has begun, so it is recommended that you are very careful with this 
+command.
+
+
+Merging files:
+FREDLIN allows you to merge another file into the one that is currently open 
+by using the Transfer command.  This comprises of the line number of the line 
+at which to insert the file, followed by the letter "T", followed by the 
+filename (including the path if it's in another directory) of the file you 
+wish to merge into the current file.  The specified file will be inserted 
+between the specified line and the line before it, such that the first line of 
+the inserted file becomes the specified line.  If the line number is not 
+specified, the "current line" (see The line numbering system [H.]) will be 
+assumed.
+
+
+Version information and Credits:
+FREDLIN 0.61.00 BETA
+2015-17 DHSC, 2017-2019 The FREDLIN Project
+Contact me on Twitter @DHeadshot
+This program is now Free Open-Source Software - distribute it as you like.
+
+This program uses the Quick and Dirty Input Library - see 
+http://github.com/dheadshot/libqdinp2 for more details.
+
+The "mygetch" routine used as a basis for the input library was created by VvV 
+and kermi3 on the CProgramming.com boards, so thanks to them for that.
+
+FREDLIN was inspired by the original EDLIN, created by Tim Paterson.  None of 
+his code or that of Microsoft has been used in this program though.

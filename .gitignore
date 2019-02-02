@@ -1,0 +1,7 @@
+# Ignore object files
+*.o
+# Ignore the libqdinp2 library
+libqdinp2.a
+qdinp2.h
+# Ignore the testing files
+testfile.txt*
