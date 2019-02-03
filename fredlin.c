@@ -14,7 +14,7 @@
 #define EOFISCANCEL 1
 #endif
 
-char progver[] = "0.61.00 BETA";
+char progver[] = "0.61.01 BETA";
 char progcopyright[] = "2015-2017 DHeadshot's Software Creations, 2017-2019 The FREDLIN Project";
 char proghelpfile[] = "frhelp.txt";
 
@@ -30,6 +30,7 @@ int printhelp(char *progname)
 {
   printf("FREDLIN %s\n", progver);
   printf("%s\n", progcopyright);
+  printf("Using the Quick and Dirty Input Library version %s\n  (see https://github.com/dheadshot/libqdinp2 ).\n",qdinpver());
   printf("Usage:\n");
   printf("  %s { --help | --test | <filename> }\n", progname);
   printf("--help	Print this message and end\n");
