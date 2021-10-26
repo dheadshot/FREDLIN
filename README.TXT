@@ -1,6 +1,6 @@
 FREDLIN README
 -----------------
-FREDLIN Version 0.61.01 BETA
+FREDLIN Version 0.61.02 BETA
 
 FREDLIN: An EDLIN-like line editor for Linux.
 

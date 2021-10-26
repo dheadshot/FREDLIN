@@ -19,6 +19,7 @@ int instr(char *targstring, char *findstring, int startoffset);
 int replacestronce(char *outstring, char *targstring, char *findstring, char *repstring, int maxlen, int startoffset);
 int firstletterpos(char *cmdstring);
 long getfredlinlnnum(char *astr, int startoffset);
+void printdebug(char *astr);
 
 /* If qdinp2 is an installed library, change the speech marks to angle brackets! */
 #include "qdinp2.h"

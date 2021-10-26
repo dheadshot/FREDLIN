@@ -14,8 +14,8 @@
 #define EOFISCANCEL 1
 #endif
 
-char progver[] = "0.61.01 BETA";
-char progcopyright[] = "2015-2017 DHeadshot's Software Creations, 2017-2019 The FREDLIN Project";
+char progver[] = "0.61.02 BETA";
+char progcopyright[] = "2015-2017 DHeadshot's Software Creations, 2017-2021 The FREDLIN Project";
 char proghelpfile[] = "frhelp.txt";
 
 struct flnode {
@@ -215,10 +215,11 @@ int main( int argc, char *argv[] )
   char aline[256] = "";
   char bline[256] = "";
   char cline[256] = ""; /* For replacements */
+  int ret = 0;
   
   while (1==1)
   {
-    if (readqdline(acmd,lastcmd,EOFISCANCEL) == 0)
+    if ((ret = readqdline(acmd,lastcmd,EOFISCANCEL)) == 0)
     {
       strcpy(lastcmd,acmd);
       tempi=instrch(lastcmd,10,0);
@@ -1382,7 +1383,7 @@ LoopReplace: /* Another small bodge */
                 /* Version information and Credits */
                 printf("Version information and Credits:\n");
                 printf("FREDLIN %s\n",progver);
-                printf("%s\nContact me on Twitter @DHeadshot\n", progcopyright);
+                printf("%s\nContact me on Twitter @DHeadshot or on the Fediverse @dheadshot@mastodon.social\n", progcopyright);
                 printf("This program is now Free Open-Source Software  - distribute it as you like.\n\n");
                 printf("This program uses the Quick and Dirty Input Library version %s.  See\nhttp://github.com/dheadshot/libqdinp2 for more details.\n\n", qdinpver());
                 printf("The \"mygetch\" routine used as a basis for the input library was created by VvV\nand kermi3 on the CProgramming.com boards, so thanks to them for that.\n\n");
@@ -1396,10 +1397,15 @@ LoopReplace: /* Another small bodge */
           
           
           default:
-            printf(enterr);
+            printf("%s",enterr);
           break;
         }
       }
+      /*printdebug(acmd);*/
+    }
+    else if (ret == 3||ret == 4)
+    {
+      printf("^%c\n",ret+64);
     }
   }
   

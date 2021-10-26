@@ -197,4 +197,15 @@ long getfredlinlnnum(char *astr, int startoffset)
   return FLN_INVALIDNUMBER;
 }
 
-
+void printdebug(char *astr)
+{
+  int i;
+  printf(">>");
+  for (i=0;astr[i]!=0;i++)
+  {
+    if (astr[i]<32 || astr[i]>126) printf("%03d ",astr[i]);
+    else printf("'%c' ",astr[i]);
+  }
+  printf("\n");
+  return;
+}

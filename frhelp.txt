@@ -325,9 +325,9 @@ assumed.
 
 
 Version information and Credits:
-FREDLIN 0.61.01 BETA
-2015-17 DHSC, 2017-2019 The FREDLIN Project
-Contact me on Twitter @DHeadshot
+FREDLIN 0.61.02 BETA
+2015-17 DHSC, 2017-2021 The FREDLIN Project
+Contact me on Twitter @DHeadshot or the Fediverse @dheadshot@mastodon.social
 This program is now Free Open-Source Software - distribute it as you like.
 
 This program uses the Quick and Dirty Input Library - see 

@@ -17,3 +17,7 @@ fredlin.o: fredlin.c fqdaf.h
 
 fqdaf.o: fqdaf.c fqdaf.h
 	gcc ${CFLAGS} -c fqdaf.c
+
+clean:
+	rm fredlin.o fqdaf.o
+
